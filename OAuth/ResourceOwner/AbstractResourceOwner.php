@@ -264,7 +264,7 @@ abstract class AbstractResourceOwner implements ResourceOwnerInterface
         try {
             $this->httpClient->send($request, $response);
         } catch (ClientException $e) {
-            throw new HttpTransportException('Error while sending HTTP request', $this->getName(), $e->getCode(), $e);
+            // Do nothing: user will be redirected to failure_path
         }
 
         return $response;

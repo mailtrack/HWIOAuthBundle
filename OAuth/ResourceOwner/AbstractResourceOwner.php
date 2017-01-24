@@ -264,9 +264,12 @@ abstract class AbstractResourceOwner implements ResourceOwnerInterface
         try {
             $this->httpClient->send($request, $response);
         } catch (ClientException $e) {
-            if ($this->httpClient->getIgnoreErrors() && $e->getCode() === ($CURLE_OPERATION_TIMEDOUT = 28)) {
-                // Don't rethrow, just return the default, non-successful response
-                // Flow is redirected to the specified failure_path
+
+            // https://curl.haxx.se/libcurl/c/libcurl-errors.html
+            $CURLE_OPERATION_TIMEDOUT = 28;
+
+            if ($this->httpClient->getIgnoreErrors() && $e->getCode() === $CURLE_OPERATION_TIMEDOUT) {
+                // Don't rethrow, just return the empty response
             } else {
                 throw new HttpTransportException('Error while sending HTTP request', $this->getName(), $e->getCode(), $e);
             }

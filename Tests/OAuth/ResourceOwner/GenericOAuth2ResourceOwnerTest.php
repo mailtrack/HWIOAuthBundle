@@ -128,11 +128,54 @@ json;
             ->method('send')
             ->will($this->throwException($exception));
 
+        $this->buzzClient->expects($this->once())
+            ->method('getIgnoreErrors')
+            ->will($this->returnValue(true));
+
         try {
             $this->resourceOwner->getUserInformation(array('access_token' => 'token'));
             $this->fail('An exception should have been raised');
         } catch (HttpTransportException $e) {
             $this->assertSame($exception, $e->getPrevious());
+        }
+    }
+
+    public function testGetUserInformationTimeoutWithoutIgnoreErrors()
+    {
+        $exception = new RequestException('CURLE_OPERATION_TIMEDOUT', 28);
+
+        $this->buzzClient->expects($this->once())
+            ->method('send')
+            ->will($this->throwException($exception));
+
+        $this->buzzClient->expects($this->once())
+            ->method('getIgnoreErrors')
+            ->will($this->returnValue(false));
+
+        try {
+            $userRespons = $this->resourceOwner->getUserInformation(array('access_token' => 'token'));
+            $this->fail('An exception should have been raised');
+        } catch (HttpTransportException $e) {
+            $this->assertSame($exception, $e->getPrevious());
+        }
+    }
+
+    public function testGetUserInformationTimeoutWithIgnoreErrors()
+    {
+        $exception = new RequestException('CURLE_OPERATION_TIMEDOUT', 28);
+
+        $this->buzzClient->expects($this->once())
+            ->method('send')
+            ->will($this->throwException($exception));
+
+        $this->buzzClient->expects($this->once())
+            ->method('getIgnoreErrors')
+            ->will($this->returnValue(true));
+
+        try {
+            $userRespons = $this->resourceOwner->getUserInformation(array('access_token' => 'token'));
+        } catch (HttpTransportException $e) {
+            $this->fail('An exception should not have been raised');
         }
     }
 

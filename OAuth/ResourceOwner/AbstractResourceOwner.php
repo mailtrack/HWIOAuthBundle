@@ -269,7 +269,7 @@ abstract class AbstractResourceOwner implements ResourceOwnerInterface
             $CURLE_OPERATION_TIMEDOUT = 28;
 
             if ($this->httpClient->getIgnoreErrors() && $e->getCode() === $CURLE_OPERATION_TIMEDOUT) {
-                // Don't rethrow, just return the empty response
+                throw new AuthenticationException('HTTP request timed out');
             } else {
                 throw new HttpTransportException('Error while sending HTTP request', $this->getName(), $e->getCode(), $e);
             }
